@@ -1,0 +1,18 @@
+Model Evaluation Report:
+
+Root Mean Squared Error (RMSE): $1400765.84
+Mean Absolute Error (MAE): $1026699.69
+R-squared Score: 0.6118
+
+Residual Statistics:
+Mean Residual: $209037.30
+Std Deviation of Residuals: $1391478.26
+Min Residual: $-3065650.00
+Max Residual: $5664330.00
+
+Top 5 Important Features:
+- area: 0.4704
+- bathrooms: 0.1527
+- airconditioning: 0.0623
+- parking: 0.0566
+- stories: 0.0548

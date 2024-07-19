@@ -19,4 +19,7 @@ langdetect==1.0.9
 langsmith==0.1.83
 unstructured==0.14.9
 gradio
+scikit-learn
+pandas
+xgboost
 
