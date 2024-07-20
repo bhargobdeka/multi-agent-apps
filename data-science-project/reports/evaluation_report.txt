@@ -1,3 +1,5 @@
+Model evaluated successfully and the evaluation report is generated. Here is the complete content of the evaluation report:
+
 Model Evaluation Report:
 
 Root Mean Squared Error (RMSE): $1400765.84
