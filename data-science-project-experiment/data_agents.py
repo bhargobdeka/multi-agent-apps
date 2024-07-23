@@ -3,9 +3,10 @@ import os
 from langchain_openai import ChatOpenAI
 from tools.kaggle_dataset_tool import KaggleDatasetDownloader
 from tools.data_processing_tool import DataPreprocessor
-from tools.model_training_tool import TrainingModelTool
+from tools.model_training_tool import RandomForestModelTool, GradientBoostModelTool, SVMModelTool, ModelComparisonTool
 from tools.model_evaluation_tool import ModelEvaluationTool
 from tools.fastapi_code_generate_tool import ModelAnalyzerTool
+from langchain_community.llms import Ollama
 
 from crewai_tools import SerperDevTool, DirectoryReadTool, FileReadTool, CSVSearchTool
 from dotenv import load_dotenv, find_dotenv
@@ -21,7 +22,7 @@ os.environ["OPENAI_API_KEY"] = os.getenv('OPENAI_API_KEY')
 
 ## LLM model
 
-# llm = Ollama(model="llama3") # local LLM 
+local_llm = Ollama(model="llama3") # local LLM 
 
 llm = ChatOpenAI(model="gpt-4o", temperature=0)
 
@@ -35,9 +36,10 @@ csv_search_tool = CSVSearchTool()
 # load custom tools
 kaggle_tool = KaggleDatasetDownloader()
 data_processing_tool = DataPreprocessor()
-model_training_tool = TrainingModelTool()
-model_evaluation_tool = ModelEvaluationTool()
-code_generator_tool = ModelAnalyzerTool()
+model_selection_tool = ModelComparisonTool()
+random_forest_tool = RandomForestModelTool()
+
+
 
 class DataAgents():
     
@@ -63,24 +65,35 @@ class DataAgents():
         )
     
     
+    def model_selection_agent(self):
+        return Agent(
+            role="Model Training and Selection Specialist",
+            goal="Trains and selects the best performing model for the given dataset",
+            backstory="An expert in machine learning model evaluation and selection.",
+            tools=[docs_tool_b, read_tool, csv_search_tool, model_selection_tool],
+            # llm=local_llm,
+            function_calling_llm=llm
+            # verbose=True
+        )
+    
     def model_training_agent(self):
         return Agent(
-            role="Random Forest Model Trainer",
-            goal="Train an Random Forest model to predict house prices accurately",
-            backstory="You are an expert in machine learning, specializing in Random Forest for regression tasks.",
-            tools=[docs_tool_b, read_tool, csv_search_tool, model_training_tool],
-            llm=llm
-        )
-        
+            role="Model Training Specialist",
+            goal="Trains a machine learning model for a given dataset",
+            backstory="An expert in machine learning model training.",
+            tools=[docs_tool_b, read_tool, csv_search_tool, random_forest_tool],
+            # llm=llm,
+            # verbose=True
+        )    
     
-    def model_evaluation_agent(self):
-        return Agent(
-            role="Model Evaluator",
-            goal="Evaluate the saved Random Forest model using the test data and generate a comprehensive evaluation report",
-            backstory="You are an expert in machine learning model evaluation, specializing in regression tasks.",
-            tools=[model_evaluation_tool],
-            llm=llm
-        )
+    # def model_evaluation_agent(self):
+    #     return Agent(
+    #         role="Model Evaluator",
+    #         goal="Evaluate the saved Random Forest model using the test data and generate a comprehensive evaluation report",
+    #         backstory="You are an expert in machine learning model evaluation, specializing in regression tasks.",
+    #         tools=[model_evaluation_tool],
+    #         llm=llm
+    #     )
         
     
     # def code_generation_agent(self):
