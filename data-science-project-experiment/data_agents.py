@@ -7,6 +7,7 @@ from tools.model_training_tool import RandomForestModelTool, GradientBoostModelT
 from tools.model_evaluation_tool import ModelEvaluationTool
 from tools.fastapi_code_generate_tool import ModelAnalyzerTool
 from langchain_community.llms import Ollama
+from langchain_anthropic import ChatAnthropic
 
 from crewai_tools import SerperDevTool, DirectoryReadTool, FileReadTool, CSVSearchTool
 from dotenv import load_dotenv, find_dotenv
@@ -18,13 +19,19 @@ os.environ["SERPER_API_KEY"] = os.getenv('SERPER_API_KEY')
 os.environ['KAGGLE_USERNAME'] = os.getenv('KAGGLE_USERNAME')
 os.environ['KAGGLE_KEY'] = os.getenv('KAGGLE_KEY')
 os.environ["OPENAI_API_KEY"] = os.getenv('OPENAI_API_KEY')
+os.environ["ANTHROPIC_API_KEY"] = os.getenv('ANTHROPIC_API_KEY')
 
 
 ## LLM model
+llm_claude = ChatAnthropic(
+    model="claude-2.1",  # Replace with your desired model
+    temperature=0,
+    max_tokens=1024
+)
 
 local_llm = Ollama(model="llama3") # local LLM 
 
-llm = ChatOpenAI(model="gpt-4o", temperature=0)
+llm = ChatOpenAI(model="gpt-4o", temperature=0, max_tokens=1024)
 
 # load crewai tools
 serper_search_tool = SerperDevTool()
@@ -70,10 +77,10 @@ class DataAgents():
             role="Model Training and Selection Specialist",
             goal="Trains and selects the best performing model for the given dataset",
             backstory="An expert in machine learning model evaluation and selection.",
-            tools=[docs_tool_b, read_tool, csv_search_tool, model_selection_tool],
-            # llm=local_llm,
-            function_calling_llm=llm
-            # verbose=True
+            tools=[docs_tool_b, read_tool, model_selection_tool],
+            llm=llm_claude,
+            function_calling_llm=llm_claude,
+            verbose=True
         )
     
     def model_training_agent(self):
